@@ -56,6 +56,7 @@ Parameters::Parameters() {
   b_optimize_timings = true;
   bound_phase_duration_ = std::make_pair(0.2, 2.0);
 
+  // w_IntermediateBaseLinPosCost << 0, 0, 1.;
   w_FinalBaseLinPosCost << 1., 1., 1.;
   w_FinalBaseLinVelCost << 1., 1., 1.;
   w_FinalBaseAngPosCost << 1., 1., 1.;
@@ -96,6 +97,7 @@ void Parameters::initialize() {
   // ===========================================================================
 
   costs_.clear();
+  //costs_.push_back({IntermediateBaseLinPosCost, w_IntermediateBaseLinPosCost});
   // costs_.push_back({FinalBaseLinPosCost, w_FinalBaseLinPosCost});
   // costs_.push_back({FinalBaseLinVelCost, w_FinalBaseLinVelCost});
   // costs_.push_back({FinalBaseAngPosCost, w_FinalBaseAngPosCost});
@@ -156,6 +158,8 @@ void Parameters::from_yaml(const YAML::Node &node) {
       ee_in_contact_at_start_.at(ee) = tmp_bool;
     }
 
+    // readParameter(node["costs"], "w_IntermediateBaseLinPosCost",
+    //               w_IntermediateBaseLinPosCost);
     readParameter(node["costs"], "w_FinalBaseLinPosCost",
                   w_FinalBaseLinPosCost);
     readParameter(node["costs"], "w_FinalBaseLinVelCost",

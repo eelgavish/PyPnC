@@ -61,6 +61,9 @@ HeightMap::Ptr HeightMap::MakeTerrain(TerrainID type) {
   case ChimneyLRID:
     return std::make_shared<ChimneyLR>();
     break;
+  case KierranID:
+    return std::make_shared<Kierran>("/home/ethan/Documents/valkyrie/PyPnC/maps/kierran-want-height-map.jpg");
+    break;
   default:
     assert(false);
     break;

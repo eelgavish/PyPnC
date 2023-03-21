@@ -47,6 +47,8 @@ void LocomotionTask::from_yaml(const YAML::Node &node) {
     terrain = std::make_shared<Chimney>();
   } else if (terrain_type == "lr_chimney") {
     terrain = std::make_shared<ChimneyLR>();
+  } else if (terrain_type == "terrain") {
+    terrain = std::make_shared<Kierran>("/home/ethan/Documents/valkyrie/PyPnC/maps/kierran-want-height-map.jpg");
   } else {
     std::cout << "Wrong Terrain Type" << std::endl;
     exit(0);

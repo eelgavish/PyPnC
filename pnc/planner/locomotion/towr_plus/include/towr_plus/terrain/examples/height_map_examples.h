@@ -35,6 +35,8 @@ Modified by Junhyeok Ahn (junhyeokahn91@gmail.com) for towr+
 #define TOWR_TOWR_ROS_INCLUDE_TOWR_ROS_HEIGHT_MAP_EXAMPLES_H_
 
 #include <towr_plus/terrain/height_map.h>
+#include <iostream>
+#include <jpeglib.h>
 
 namespace towr_plus {
 
@@ -170,6 +172,79 @@ private:
 
   const double x_end1_ = x_start_ + length_;
   const double x_end2_ = x_start_ + 2 * length_;
+};
+
+/**
+ * @brief Terrain from height map file.
+ */
+class Kierran : public HeightMap {
+
+private:
+  int width;
+  int height;    
+  double xscale = .05;
+  double yscale = .05;
+  double zscale = .01;  
+  double zero;
+  unsigned char* data;
+
+public:
+  Kierran(const char* filename){
+    // Open the input file
+    FILE* infile = fopen(filename, "rb");
+    if (infile == NULL) {
+        std::cerr << "Error: failed to open file " << filename << std::endl;
+        exit(1);
+    }
+
+    // Initialize the JPEG decompression object
+    struct jpeg_decompress_struct cinfo;
+    struct jpeg_error_mgr jerr;
+
+    cinfo.err = jpeg_std_error(&jerr);
+    jpeg_create_decompress(&cinfo);
+    jpeg_stdio_src(&cinfo, infile);
+    jpeg_read_header(&cinfo, TRUE);
+    jpeg_start_decompress(&cinfo);
+
+    // Allocate memory for the height map data
+    width = cinfo.output_width;
+    height = cinfo.output_height;
+    data = new unsigned char[width * height];
+
+    // Read the height map data
+    JSAMPROW row_pointer;
+    int row_stride = cinfo.output_width * cinfo.output_components;
+
+    while (cinfo.output_scanline < cinfo.output_height) {
+        row_pointer = &data[cinfo.output_scanline * width];
+        jpeg_read_scanlines(&cinfo, &row_pointer, 1);
+    }
+
+    // Clean up
+    jpeg_finish_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
+    fclose(infile);
+
+    const int length = int(width*height);
+    for(int i = 0; i < length; i++){
+      data[i] *= zscale;
+      std::cout << data[i];
+    } 
+    zero = data[(int)(length/2)];
+
+  }
+
+  ~Kierran() {
+    delete[] data;
+  }
+
+  int getWidth() const;
+  int getHeight() const;
+
+  double GetHeight(double x, double y) const override;
+  double GetHeightDerivWrtX(double x, double y) const override;
+  double GetHeightDerivWrtY(double x, double y) const override;
 };
 
 /** @}*/

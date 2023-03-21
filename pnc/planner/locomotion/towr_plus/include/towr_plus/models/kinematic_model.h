@@ -88,10 +88,12 @@ public:
 
   Eigen::Vector3d SetMaximumDeviationFromNominal(const Eigen::Vector3d &v) {
     max_dev_from_nominal_ = v;
+    return v;
   }
 
   Eigen::Vector3d SetMinimumDeviationFromNominal(const Eigen::Vector3d &v) {
     min_dev_from_nominal_ = v;
+    return v;
   }
 
   /**

@@ -17,6 +17,8 @@ from util import util
 from util import liegroup
 from util import robot_kinematics
 
+import cv2 as cv
+
 ## Configs
 DT = 0.01
 
@@ -98,16 +100,35 @@ if __name__ == "__main__":
         block = p.loadURDF(cwd + "/robot_model/ground/block.urdf",
                            [0, 0, 0.15],
                            useFixedBase=True)
+        # Ground Plane
+        p.loadURDF(cwd + "/robot_model/ground/plane.urdf", [0, 0, 0])
     elif file == "data/valkyrie_stair.yaml":
         stair = p.loadURDF(cwd + "/robot_model/ground/stair.urdf",
                            [0.2, 0, 0.],
                            useFixedBase=True)
+        # Ground Plane
+        p.loadURDF(cwd + "/robot_model/ground/plane.urdf", [0, 0, 0])
     elif file == "data/valkyrie_slope.yaml":
         gap = p.loadURDF(cwd + "/robot_model/ground/slope.urdf",
                          [0.325, 0, -0.125],
                          useFixedBase=True)
+        # Ground Plane
+        p.loadURDF(cwd + "/robot_model/ground/plane.urdf", [0, 0, 0])
+    elif file == "data/valkyrie_terrain.yaml":
+        zscale=.01
+        mapfile = "/home/ethan/Documents/valkyrie/PyPnC/maps/kierran-want-height-map.jpg"
+        heightmap = cv.imread(mapfile,0)
+        heightmap = cv.blur(heightmap,(10,10))
+        numHeightfieldColumns = heightmap.shape[0]
+        numHeightfieldRows = heightmap.shape[1]
+        heightmap = heightmap*zscale
+        zero = heightmap[int(numHeightfieldColumns/2),int(numHeightfieldRows/2)]
+        heightfieldData = heightmap.flatten()
+        terrainShape = p.createCollisionShape(shapeType = p.GEOM_HEIGHTFIELD, heightfieldTextureScaling=1, meshScale=[.05,.05,1], heightfieldData=heightfieldData, numHeightfieldRows=numHeightfieldRows, numHeightfieldColumns=numHeightfieldColumns)
+        textureId = p.loadTexture(mapfile)
+        terrain  = p.createMultiBody(0, terrainShape, basePosition=[0,0,zero])
+        p.changeVisualShape(terrain, -1, textureUniqueId = textureId)
 
-    p.loadURDF(cwd + "/robot_model/ground/plane.urdf", [0, 0, 0])
     p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
 
     # Robot Configuration : 0 << Left Foot, 1 << Right Foot
