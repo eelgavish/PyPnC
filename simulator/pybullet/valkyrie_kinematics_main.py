@@ -116,7 +116,7 @@ if __name__ == "__main__":
         p.loadURDF(cwd + "/robot_model/ground/plane.urdf", [0, 0, 0])
     elif file == "data/valkyrie_terrain.yaml":
         zscale=.01
-        mapfile = "/home/ethan/Documents/valkyrie/PyPnC/maps/kierran-want-height-map.jpg"
+        mapfile = cwd + "/maps/kierran-want-height-map.jpg"
         heightmap = cv.imread(mapfile,0)
         heightmap = cv.blur(heightmap,(10,10))
         numHeightfieldColumns = heightmap.shape[0]
