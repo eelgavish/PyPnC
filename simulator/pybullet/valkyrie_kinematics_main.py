@@ -10,6 +10,7 @@ from collections import OrderedDict
 from ruamel.yaml import YAML
 import pybullet as p
 import numpy as np
+import csv
 np.set_printoptions(precision=3)
 
 from util import pybullet_util
@@ -31,30 +32,70 @@ INITIAL_QUAT_WORLD_TO_BASEJOINT = [0., 0., 0., 1.]
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--file", type=str)
+parser.add_argument("--num", type=int, nargs='?', default=1)
 args = parser.parse_args()
 
 ## Parse file
 file = args.file
+num = args.num
 vis_idx = 0
 if file is not None:
-    with open(file, 'r') as stream:
-        data = YAML().load(stream)
-        vis_time = data["trajectory"]["time"]
-        vis_base_lin = np.array(data["trajectory"]["base_lin"])
-        vis_base_ang = np.array(data["trajectory"]["base_ang"])
-        vis_ee_motion_lin = dict()
-        vis_ee_motion_ang = dict()
-        vis_ee_wrench_lin = dict()
-        vis_ee_wrench_ang = dict()
-        for ee in range(2):
-            vis_ee_motion_lin[ee] = np.array(
-                data["trajectory"]["ee_motion_lin"][ee])
-            vis_ee_motion_ang[ee] = np.array(
-                data["trajectory"]["ee_motion_ang"][ee])
-            vis_ee_wrench_lin[ee] = np.array(
-                data["trajectory"]["ee_wrench_lin"][ee])
-            vis_ee_wrench_ang[ee] = np.array(
-                data["trajectory"]["ee_wrench_ang"][ee])
+    if num is not None:
+        tempfile = file.split('.')[0] + "0" + ".yaml"
+        with open(tempfile, 'r') as stream:
+            data = YAML().load(stream)
+            vis_time = data["trajectory"]["time"]
+            vis_base_lin = np.array(data["trajectory"]["base_lin"])
+            vis_base_ang = np.array(data["trajectory"]["base_ang"])
+            vis_ee_motion_lin = dict()
+            vis_ee_motion_ang = dict()
+            vis_ee_wrench_lin = dict()
+            vis_ee_wrench_ang = dict()
+            for ee in range(2):
+                vis_ee_motion_lin[ee] = np.array(
+                    data["trajectory"]["ee_motion_lin"][ee])
+                vis_ee_motion_ang[ee] = np.array(
+                    data["trajectory"]["ee_motion_ang"][ee])
+                vis_ee_wrench_lin[ee] = np.array(
+                    data["trajectory"]["ee_wrench_lin"][ee])
+                vis_ee_wrench_ang[ee] = np.array(
+                    data["trajectory"]["ee_wrench_ang"][ee])
+        if num > 1:
+            for i in range(1, num):
+                tempfile = file.split('.')[0] + str(i) + ".yaml"
+                with open(tempfile, 'r') as stream:
+                    data = YAML().load(stream)
+                    vis_time = np.append(vis_time, data["trajectory"]["time"], axis=0)
+                    vis_base_lin = np.append(vis_base_lin, np.array(data["trajectory"]["base_lin"]), axis=0)
+                    vis_base_ang = np.append(vis_base_ang, np.array(data["trajectory"]["base_ang"]), axis=0)
+                    for ee in range(2):
+                        vis_ee_motion_lin[ee] = np.append(vis_ee_motion_lin[ee], np.array(
+                            data["trajectory"]["ee_motion_lin"][ee]), axis=0)
+                        vis_ee_motion_ang[ee] = np.append(vis_ee_motion_ang[ee], np.array(
+                            data["trajectory"]["ee_motion_ang"][ee]), axis=0)
+                        vis_ee_wrench_lin[ee] = np.append(vis_ee_wrench_lin[ee], np.array(
+                            data["trajectory"]["ee_wrench_lin"][ee]), axis=0)
+                        vis_ee_wrench_ang[ee] = np.append(vis_ee_wrench_ang[ee], np.array(
+                            data["trajectory"]["ee_wrench_ang"][ee]), axis=0)
+    else:
+        with open(file, 'r') as stream:
+            data = YAML().load(stream)
+            vis_time = data["trajectory"]["time"]
+            vis_base_lin = np.array(data["trajectory"]["base_lin"])
+            vis_base_ang = np.array(data["trajectory"]["base_ang"])
+            vis_ee_motion_lin = dict()
+            vis_ee_motion_ang = dict()
+            vis_ee_wrench_lin = dict()
+            vis_ee_wrench_ang = dict()
+            for ee in range(2):
+                vis_ee_motion_lin[ee] = np.array(
+                    data["trajectory"]["ee_motion_lin"][ee])
+                vis_ee_motion_ang[ee] = np.array(
+                    data["trajectory"]["ee_motion_ang"][ee])
+                vis_ee_wrench_lin[ee] = np.array(
+                    data["trajectory"]["ee_wrench_lin"][ee])
+                vis_ee_wrench_ang[ee] = np.array(
+                    data["trajectory"]["ee_wrench_ang"][ee])
 
 
 def set_initial_config(robot, joint_id):
@@ -76,9 +117,12 @@ if __name__ == "__main__":
 
     # Environment Setup
     p.connect(p.GUI)
-    p.resetDebugVisualizerCamera(cameraDistance=1.5,
-                                 cameraYaw=120,
-                                 cameraPitch=-30,
+    cdist = 2
+    cyaw = 300
+    cpitch = -30
+    p.resetDebugVisualizerCamera(cameraDistance=cdist,
+                                 cameraYaw=cyaw,
+                                 cameraPitch=cpitch,
                                  cameraTargetPosition=[1, 0.5, 1.5])
     p.setGravity(0, 0, -9.81)
     p.setPhysicsEngineParameter(fixedTimeStep=DT, numSubSteps=1)
@@ -114,19 +158,19 @@ if __name__ == "__main__":
                          useFixedBase=True)
         # Ground Plane
         p.loadURDF(cwd + "/robot_model/ground/plane.urdf", [0, 0, 0])
-    elif file == "data/valkyrie_terrain.yaml":
-        zscale=.01
-        mapfile = cwd + "/maps/kierran-want-height-map.jpg"
-        heightmap = cv.imread(mapfile,0)
-        heightmap = cv.blur(heightmap,(10,10))
-        numHeightfieldColumns = heightmap.shape[0]
-        numHeightfieldRows = heightmap.shape[1]
-        heightmap = heightmap*zscale
-        zero = heightmap[int(numHeightfieldColumns/2),int(numHeightfieldRows/2)]
-        heightfieldData = heightmap.flatten()
-        terrainShape = p.createCollisionShape(shapeType = p.GEOM_HEIGHTFIELD, heightfieldTextureScaling=1, meshScale=[.05,.05,1], heightfieldData=heightfieldData, numHeightfieldRows=numHeightfieldRows, numHeightfieldColumns=numHeightfieldColumns)
-        textureId = p.loadTexture(mapfile)
-        terrain  = p.createMultiBody(0, terrainShape, basePosition=[0,0,zero])
+    elif file[0:21] == "data/valkyrie_terrain":
+        mapfile = cwd + "/maps/Travis.png"
+        texturefile = cwd + "/maps/Mars.png"
+        heightfile = mapfile + ".txt"
+        heightfield = np.genfromtxt(heightfile, delimiter=',')
+        numHeightfieldRows = 100
+        numHeightfieldColumns = 100
+        scale = heightfield[1,1]
+        heightfieldData = heightfield[:,2]
+        zeroH = np.amax(heightfieldData)/2
+        terrainShape = p.createCollisionShape(shapeType = p.GEOM_HEIGHTFIELD, heightfieldTextureScaling=1, meshScale=[scale,scale,1], heightfieldData=heightfieldData, numHeightfieldRows=numHeightfieldRows, numHeightfieldColumns=numHeightfieldColumns)
+        terrain  = p.createMultiBody(0, terrainShape, basePosition=[scale*50,scale*50,zeroH])
+        textureId = p.loadTexture(texturefile)
         p.changeVisualShape(terrain, -1, textureUniqueId = textureId)
 
     p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
@@ -241,6 +285,23 @@ if __name__ == "__main__":
         # Visualize config
         pybullet_util.set_config(robot, joint_id, link_id, base_pos, base_quat,
                                  joint_pos)
+        
+        p.resetDebugVisualizerCamera( cameraDistance=cdist, cameraYaw=cyaw, cameraPitch=cpitch, cameraTargetPosition=base_pos)
+
+        keys = p.getKeyboardEvents()
+        #Keys to change camera
+        if keys.get(100):  #D
+            cyaw+=1
+        if keys.get(97):   #A
+            cyaw-=1
+        if keys.get(99):   #C
+            cpitch+=1
+        if keys.get(102):  #F
+            cpitch-=1
+        if keys.get(122):  #Z
+            cdist+=.01
+        if keys.get(120):  #X
+            cdist-=.01
 
         # Disable forward step
         # p.stepSimulation()

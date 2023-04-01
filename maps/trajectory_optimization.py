@@ -9,21 +9,26 @@ from typing import List, Tuple
 import math
 from rdp import rdp
 import yaml
-from writing_yaml_test import write_yamls
+from write_yamls import write_yamls
 
 print("Running...")
 mapfile = "maps/Travis.png"
-heightmap = cv.imread(mapfile,0)
+# heightmap = cv.imread(mapfile,0)
 
-# Scale the matrix linearly to range [0, 100]
-min_val = np.min(heightmap)
-max_val = np.max(heightmap)
-scaled_heightmap = 100 * ((heightmap - min_val) / (max_val - min_val))
+# # Scale the matrix linearly to range [0, 100]
+# min_val = np.min(heightmap)
+# max_val = np.max(heightmap)
+# scaled_heightmap = 100 * ((heightmap - min_val) / (max_val - min_val))
+
+heightfile = mapfile + ".txt"
+heightfield = np.genfromtxt(heightfile, delimiter=',')
+heightmap = heightfield[:,2].reshape(100,100)
+resolution = heightfield[1,1]
+scaled_heightmap = heightmap*100
 
 blur = cv.blur(scaled_heightmap,(25,25))
 print("Blurred...")
 grid = Grid(matrix=blur)
-#grid = Grid(matrix=scaled_heightmap)
 
 start = grid.node(0,0)
 end = grid.node(grid.width-1,grid.height-1)
@@ -32,25 +37,48 @@ end = grid.node(grid.width-1,grid.height-1)
 finder = DijkstraFinder(diagonal_movement=DiagonalMovement.always)
 path, runs = finder.find_path(start, end, grid)
 print("Solution Found.")
-
 print('operations:', runs, 'path length:', len(path))
 #print(grid.grid_str(path=path, start=start, end=end))
 testList2 = [[elem1, elem2] for elem1, elem2 in path]
 
-desiredNumberOfPoints = 10
-print(len(testList2))
+desiredNumberOfPoints = 20
 e = (len(testList2) / (3 * desiredNumberOfPoints)) * 2
 testList3 = rdp(testList2, epsilon=e)
-print(testList3)
 
 # Write this stuff to a yaml file
-write_yamls(testList3)
+yamlList = [[point[0]*resolution, point[1]*resolution, heightmap[point[0], point[1]]] for point in testList3]
 
-plt.figure(1)
-plt.imshow(scaled_heightmap, cmap='hot')
-plt.plot(*zip(*testList3))
-plt.figure(2)
-plt.imshow(blur, cmap='hot')
-plt.plot(*zip(*testList3))
-plt.show()
-print("Done.")
+# Check the lengths of links and split them if they are too long
+yamlList2 = [yamlList[0]]
+for i in range(len(yamlList)-1):
+    pt1 = yamlList[i]
+    pt2 = yamlList[i+1]
+    numToSplit = math.floor(math.dist(pt1,pt2)/2)
+    if numToSplit > 0:
+        x1 = pt1[0]
+        y1 = pt1[1]
+        z1 = pt1[2]
+        x2 = pt2[0]
+        y2 = pt2[1]
+        z2 = pt2[2]
+        xdist = (x2-x1)/(numToSplit+1)
+        ydist = (y2-y1)/(numToSplit+1)
+        zdist = (z2-z1)/(numToSplit+1)
+        for j in range(numToSplit):
+            k = j+1
+            add = np.array([[x1+k*xdist, y1+k*ydist, z1+k*zdist]])
+            yamlList2 = np.append(yamlList2, add)
+    yamlList2 = np.append(yamlList2, yamlList[i+1])
+
+yamlList2 = yamlList2.reshape(int(len(yamlList2)/3),3)
+
+write_yamls(yamlList2)
+
+# plt.figure(1)
+# plt.imshow(scaled_heightmap, cmap='hot')
+# plt.plot(*zip(*testList3))
+# plt.figure(2)
+# plt.imshow(blur, cmap='hot')
+# plt.plot(*zip(*testList3))
+# plt.show()
+# print("Done.")
