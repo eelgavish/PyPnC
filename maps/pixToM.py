@@ -29,8 +29,8 @@ def writePNGtoCSV(mapfile, samples, scalexy, scalez):
             coordinates[k,:] = np.array([i/scalexy*shape0[0]/shape[0], j/scalexy*shape0[1]/shape[1], scaled_heightmap[i,j]])
             k = k+1
 
-    with open('out.txt', 'w') as f:
+    with open(mapfile+'.txt', 'w') as f:
         writer = csv.writer(f, delimiter=',')
         writer.writerows(coordinates)
 
-writePNGtoCSV("maps/Travis.png", 100, 10, 5)
+writePNGtoCSV("maps/Travis.png", 100, 30, 1)
