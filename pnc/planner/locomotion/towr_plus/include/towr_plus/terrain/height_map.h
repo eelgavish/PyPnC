@@ -88,7 +88,7 @@ public:
     SlopeID,
     ChimneyID,
     ChimneyLRID,
-    KierranID,
+    TravisID,
     TERRAIN_COUNT
   };
 
@@ -185,7 +185,7 @@ const static std::map<HeightMap::TerrainID, std::string> terrain_names = {
     {HeightMap::FlatID, "Flat"},          {HeightMap::BlockID, "Block"},
     {HeightMap::StairsID, "Stairs"},      {HeightMap::GapID, "Gap"},
     {HeightMap::SlopeID, "Slope"},        {HeightMap::ChimneyID, "Chimney"},
-    {HeightMap::ChimneyLRID, "ChimenyLR"},{HeightMap::KierranID, "Kierran"}};
+    {HeightMap::ChimneyLRID, "ChimenyLR"},{HeightMap::TravisID, "Travis"}};
 
 } /* namespace towr_plus */
 

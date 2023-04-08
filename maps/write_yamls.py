@@ -9,14 +9,8 @@ def write_yamls(points):
         pt2 = points[i+1]
 
         cmh = 0.98
-
         zang = 0
-
         footwidth = 0.137
-
-        # Base Lin stuff for when we have heightmaps in
-        #   - """ + str(float(cmh + pt2[2])) + """
-        #   - """ + str(float(cmh + pt1[2])) + """
 
         dx = pt2[0]-pt1[0]
         dy = pt2[1]-pt1[1]
@@ -24,6 +18,10 @@ def write_yamls(points):
             zang = math.atan(dy/dx)
         elif dx < 0:
             zang = math.pi + math.atan(dy/dx)
+        elif dx == 0 and dy < 0:
+            zang = -1.57
+        elif dx == 0 and dy > 0:
+            zang = 1.57
 
         if i < len(points) - 2:
             pt3 = points[i+2]
@@ -33,6 +31,10 @@ def write_yamls(points):
                 zang2 = math.atan(dy2/dx2)
             elif dx2 < 0:
                 zang2 = math.pi + math.atan(dy2/dx2)
+            elif dx2 == 0 and dy2 < 0:
+                zang2 = -1.57
+            elif dx2 == 0 and dy2 > 0:
+                zang2 = 1.57
 
         dist = math.sqrt(dy**2 + dx**2)
         numSwings = math.ceil(dist/0.25)
@@ -149,7 +151,7 @@ locomotion_task:
   final_base_lin:
   - """ + str(float(pt2[0])) + """
   - """ + str(float(pt2[1])) + """
-  - """ + str(cmh) + """
+  - """ + str(cmh + pt2[2]) + """
   - 0.0
   - 0.0
   - 0.0
@@ -163,7 +165,7 @@ locomotion_task:
   initial_base_lin:
   - """ + str(float(pt1[0])) + """
   - """ + str(float(pt1[1])) + """
-  - """ + str(cmh) + """
+  - """ + str(cmh + pt1[2]) + """
   - 0.0
   - 0.0
   - 0.0
@@ -180,12 +182,12 @@ locomotion_task:
     0:
     - """ + str(float(pt1[0]) - math.sin(zang)*footwidth) + """
     - """ + str(float(pt1[1]) + math.cos(zang)*footwidth) + """
-    - 0.0
+    - """ + str(pt1[2]) + """
     1:
     - """ + str(float(pt1[0]) + math.sin(zang)*footwidth) + """
     - """ + str(float(pt1[1]) - math.cos(zang)*footwidth) + """
-    - 0.0
-  terrain_type: flat_ground
+    - """ + str(pt1[2]) + """
+  terrain_type: terrain
 solver: ipopt
 """
         #yaml.dump(yaml.load(doc, Loader=yaml.CLoader), default_flow_style=False)

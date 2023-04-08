@@ -32,12 +32,16 @@ INITIAL_QUAT_WORLD_TO_BASEJOINT = [0., 0., 0., 1.]
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--file", type=str)
-parser.add_argument("--num", type=int, nargs='?', default=1)
+parser.add_argument("--num", type=int)
+parser.add_argument("--map", type=str)
+parser.add_argument("--tex", type=str)
 args = parser.parse_args()
 
 ## Parse file
 file = args.file
 num = args.num
+mapfileinput = args.map
+texfileinput = args.tex
 vis_idx = 0
 if file is not None:
     if num is not None:
@@ -159,19 +163,19 @@ if __name__ == "__main__":
         # Ground Plane
         p.loadURDF(cwd + "/robot_model/ground/plane.urdf", [0, 0, 0])
     elif file[0:21] == "data/valkyrie_terrain":
-        mapfile = cwd + "/maps/Travis.png"
-        texturefile = cwd + "/maps/Mars.png"
+        mapfile = cwd + "/" + mapfileinput
+        texturefile = cwd + "/" + texfileinput
         heightfile = mapfile + ".txt"
         heightfield = np.genfromtxt(heightfile, delimiter=',')
         numHeightfieldRows = 100
         numHeightfieldColumns = 100
-        scale = heightfield[1,1]
+        scale = heightfield[1,0]
         heightfieldData = heightfield[:,2]
         zeroH = np.amax(heightfieldData)/2
         terrainShape = p.createCollisionShape(shapeType = p.GEOM_HEIGHTFIELD, heightfieldTextureScaling=1, meshScale=[scale,scale,1], heightfieldData=heightfieldData, numHeightfieldRows=numHeightfieldRows, numHeightfieldColumns=numHeightfieldColumns)
         terrain  = p.createMultiBody(0, terrainShape, basePosition=[scale*50,scale*50,zeroH])
         textureId = p.loadTexture(texturefile)
-        p.changeVisualShape(terrain, -1, textureUniqueId = textureId)
+        p.changeVisualShape(terrain, -1, textureUniqueId = textureId, rgbaColor=[1,0.5,0.25,1])
 
     p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
 
