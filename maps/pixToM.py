@@ -36,4 +36,4 @@ def writePNGtoCSV(mapfile, samples, scalexy, scalez):
     return 0
 
 if __name__ == "__main__":
-    writePNGtoCSV("maps/Travis.png", 100, 30, 1)
+    writePNGtoCSV("maps/RollingHillsHeight.png", 100, 30, 1)

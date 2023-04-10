@@ -1,5 +1,16 @@
 #include <towr_plus/locomotion_task.h>
 #include <towr_plus/terrain/examples/height_map_examples.h>
+#include <stdio.h> 
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#include <iostream>
+
+std::string GetCurrentWorkingDir( void ) {
+  char buff[FILENAME_MAX];
+  GetCurrentDir( buff, FILENAME_MAX );
+  std::string current_working_dir(buff);
+  return current_working_dir;
+}
 
 LocomotionTask::LocomotionTask(const std::string &name) {
   name_ = name;
@@ -48,7 +59,7 @@ void LocomotionTask::from_yaml(const YAML::Node &node) {
   } else if (terrain_type == "lr_chimney") {
     terrain = std::make_shared<ChimneyLR>();
   } else if (terrain_type == "terrain") {
-    terrain = std::make_shared<Travis>("/home/ethan/valkyrie/PyPnC/maps/RollingHillsHeight.png.txt");
+    terrain = std::make_shared<Travis>(GetCurrentWorkingDir() +  "/maps/RollingHillsHeight.png.txt");
   } else {
     std::cout << "Wrong Terrain Type" << std::endl;
     exit(0);
