@@ -36,7 +36,8 @@ class SlopeFinder(AStarFinder):
 
         # weight for weighted algorithms
         if self.weighted:
-            ng *= self.dist_weight
-            ng += ((node_b.weight - node_a.weight)/self.resolution) * self.slope_weight
+            dist = ng*self.dist_weight
+            slope = (abs(node_b.weight - node_a.weight)/ng) * self.slope_weight
+            ng = dist + slope
 
         return node_a.g + ng

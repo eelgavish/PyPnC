@@ -174,7 +174,8 @@ if __name__ == "__main__":
         zeroH = np.amax(heightfieldData)/2
         terrainShape = p.createCollisionShape(shapeType = p.GEOM_HEIGHTFIELD, heightfieldTextureScaling=1, meshScale=[scale,scale,1], heightfieldData=heightfieldData, numHeightfieldRows=numHeightfieldRows, numHeightfieldColumns=numHeightfieldColumns)
         terrain  = p.createMultiBody(0, terrainShape, basePosition=[scale*50,scale*50,zeroH])
-        textureId = p.loadTexture(texturefile)
+        if texfileinput is not None:
+            textureId = p.loadTexture(texturefile)
         p.changeVisualShape(terrain, -1, textureUniqueId = textureId, rgbaColor=[1,0.5,0.25,1])
 
     p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
