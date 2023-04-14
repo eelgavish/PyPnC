@@ -6,19 +6,8 @@ from pathfinding.core.util import SQRT2
 
 class SlopeFinder(AStarFinder):
 
-    def __init__(self, weight=1,
-                 diagonal_movement=DiagonalMovement.never,
-                 time_limit=TIME_LIMIT,
-                 max_runs=MAX_RUNS,
-                 resolution=1.0,
-                 dist_weight = 1.0,
-                 slope_weight = 1.0):
-        super(SlopeFinder, self).__init__(
-            heuristic=null,
-            weight=weight,
-            diagonal_movement=diagonal_movement,
-            time_limit=time_limit,
-            max_runs=max_runs)
+    def __init__(self, weight=1, diagonal_movement=DiagonalMovement.never, time_limit=TIME_LIMIT, max_runs=MAX_RUNS, resolution=1.0, dist_weight = 1.0, slope_weight = 1.0):
+        super(SlopeFinder, self).__init__(heuristic=null, weight=weight, diagonal_movement=diagonal_movement, time_limit=time_limit, max_runs=max_runs)
         self.resolution = resolution
         self.dist_weight = dist_weight
         self.slope_weight = slope_weight
@@ -41,3 +30,6 @@ class SlopeFinder(AStarFinder):
             ng = dist + slope
 
         return node_a.g + ng
+    
+    def find_path(self, start, end, grid):
+        return super().find_path(start, end, grid)
