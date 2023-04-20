@@ -84,7 +84,25 @@ void PhaseDurations::SetVariables(const VectorXd &x) {
   // ignore it by compiling in Release mode, but I'm leaving this in here to
   // show that this is undefined behavior and a clean implementation is still
   // required. PR desired ;)
+
+
+
+  // double error = .01;
+  // double t_diff = abs(t_total_ - x.sum());
+  // double x_new;
+
+  // if (t_total_ < x.sum())
+  // {  
+  //   x_new = x.sum() - t_diff - error; 
+  // }
+
+
   assert(t_total_ > x.sum());
+
+  // std::cout << '\n' << std::endl; 
+  // std::cout << "t_total_ = " << t_total_ << std::endl;
+  // std::cout << "x_new = " << x_new << std::endl;
+
 
   for (int i = 0; i < GetRows(); ++i)
     durations_.at(i) = x(i);

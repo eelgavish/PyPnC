@@ -88,9 +88,9 @@ int main(int argc, char* argv[]) {
     return 0;
   }else{
     for(int i = startSegment; i < startSegment+numSegments; i++){
-      std::string name = "valkyrie_terrain" + std::to_string(i);
+      std::string name = "valkyrie_simple_maze" + std::to_string(i);
       YAML::Node cfg =
-          YAML::LoadFile(THIS_COM "config/towr_plus/valkyrie_terrain" + std::to_string(i) + ".yaml");
+          YAML::LoadFile(THIS_COM "config/towr_plus/valkyrie_simple_maze" + std::to_string(i) + ".yaml");
       Clock clock = Clock();
       double time_solving(0.);
 

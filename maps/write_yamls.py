@@ -8,8 +8,8 @@ def write_yamls(points):
         pt1 = points[i]
         pt2 = points[i+1]
 
-        cmh = 0.98
-        zang = 0
+        cmh = 0.98  # Center of Mass Height
+        zang = 0    # Initial angle of orientation of whole body for this step, zang2 is the final angle
         footwidth = 0.137
 
         dx = pt2[0]-pt1[0]
@@ -37,7 +37,7 @@ def write_yamls(points):
                 zang2 = 1.57
 
         dist = math.sqrt(dy**2 + dx**2)
-        numSwings = math.ceil(dist/0.25)
+        numSwings = math.ceil(dist/0.5)
 
         leg1 = "    0:\n    - 0.5"
         leg2 = "    1:\n    - 2.0"
@@ -54,7 +54,7 @@ def write_yamls(points):
 
         doc = """
 locomotion_param:
-  b_optimize_timings: true
+  b_optimize_timings: false
   bound_phase_duration:
   - 0.15
   - 0.15
@@ -191,5 +191,5 @@ locomotion_task:
 solver: ipopt
 """
         #yaml.dump(yaml.load(doc, Loader=yaml.CLoader), default_flow_style=False)
-        with open('config/towr_plus/valkyrie_terrain' + str(i) + '.yaml', 'w') as f:
+        with open('config/towr_plus/valkyrie_simple_maze' + str(i) + '.yaml', 'w') as f:
             yaml.dump(yaml.load(doc, Loader=yaml.CLoader), f, default_flow_style=False)

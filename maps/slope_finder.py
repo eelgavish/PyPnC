@@ -6,10 +6,16 @@ from pathfinding.core.util import SQRT2
 
 class SlopeFinder(AStarFinder):
 
-    def __init__(self, weight=1, diagonal_movement=DiagonalMovement.never, time_limit=TIME_LIMIT, max_runs=MAX_RUNS, resolution=1.0, dist_weight = 1.0, slope_weight = 1.0):
+    def __init__(self, weight=1, diagonal_movement=DiagonalMovement.never, time_limit=TIME_LIMIT, max_runs=MAX_RUNS, resolution=1.0, slope_weight = 0.5):
         super(SlopeFinder, self).__init__(heuristic=null, weight=weight, diagonal_movement=diagonal_movement, time_limit=time_limit, max_runs=max_runs)
         self.resolution = resolution
-        self.dist_weight = dist_weight
+
+        if slope_weight > 1:
+            slope_weight = 1
+        if slope_weight < 0:
+            slope_weight = 0
+            
+        self.dist_weight = 1-slope_weight
         self.slope_weight = slope_weight
         
     def calc_cost(self, node_a, node_b):

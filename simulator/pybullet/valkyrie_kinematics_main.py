@@ -128,7 +128,7 @@ if __name__ == "__main__":
                                  cameraYaw=cyaw,
                                  cameraPitch=cpitch,
                                  cameraTargetPosition=[1, 0.5, 1.5])
-    p.setGravity(0, 0, -9.81)
+    p.setGravity(0, 0, -3.721)
     p.setPhysicsEngineParameter(fixedTimeStep=DT, numSubSteps=1)
     if VIDEO_RECORD:
         if not os.path.exists('video'):
@@ -278,7 +278,7 @@ if __name__ == "__main__":
                 print(q_guess)
                 print("q_sol")
                 print(q_sol)
-                __import__('ipdb').set_trace()
+                # __import__('ipdb').set_trace()
                 print("====================================")
 
         # Handle timings

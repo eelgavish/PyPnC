@@ -34,7 +34,7 @@ def trajectory_optimizer(mapfile, ini, fin, blur_weight=10, dist_weight=1, slope
     start = grid.node(ini[0],ini[1])
     end = grid.node(fin[0],fin[1])
 
-    finder = SlopeFinder(resolution=resolution,dist_weight=dist_weight,slope_weight=slope_weight,diagonal_movement=DiagonalMovement.always)
+    finder = SlopeFinder(resolution=resolution,slope_weight=slope_weight,diagonal_movement=DiagonalMovement.always)
     path, runs = finder.find_path(start, end, grid)
     print('operations:', runs, 'path length:', len(path))
     print(grid.grid_str(path=path, start=start, end=end))
@@ -57,7 +57,8 @@ def trajectory_optimizer(mapfile, ini, fin, blur_weight=10, dist_weight=1, slope
     for i in range(len(yamlList)-1):
         pt1 = yamlList[i]
         pt2 = yamlList[i+1]
-        numToSplit = math.floor(math.dist(pt1,pt2)/2)
+        maxLength = 2
+        numToSplit = math.floor(math.dist(pt1,pt2)/maxLength) # Splits into segments no longer than maxLength
         if numToSplit > 0:
             x1 = pt1[0]
             y1 = pt1[1]
