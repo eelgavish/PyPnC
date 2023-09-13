@@ -134,6 +134,11 @@ namespace towr_plus {
  * this option should be treated with caution. An alternative to turning on
  * this option is initializing with different gaits and/or changing the
  * parameters described above.
+ * 
+ * Added by: Ethan Elgavish | 03/07/2023
+ * ### Adding Height Cost ###
+ * Height cost is the sum of squares of height change between nodes, this is in 
+ * the pursuit of a trajectory optimizer that avoids difficult terrain if possible.
  *
  * @ingroup Parameters
  */
@@ -158,6 +163,7 @@ public:
    *  problem.
    */
   enum CostName {
+    //IntermediateBaseLinPosCost, // Min height change
     FinalBaseLinPosCost,
     FinalBaseLinVelCost,
     FinalBaseAngPosCost,
@@ -254,7 +260,8 @@ public:
   /// Set robot specific parameters from yaml.
   void from_yaml(const YAML::Node &node);
   void initialize();
-
+  
+  //Eigen::VectorXd w_IntermediateBaseLinPosCost = Eigen::VectorXd::Zero(3);
   Eigen::VectorXd w_FinalBaseLinPosCost = Eigen::VectorXd::Zero(3);
   Eigen::VectorXd w_FinalBaseLinVelCost = Eigen::VectorXd::Zero(3);
   Eigen::VectorXd w_FinalBaseAngPosCost = Eigen::VectorXd::Zero(3);

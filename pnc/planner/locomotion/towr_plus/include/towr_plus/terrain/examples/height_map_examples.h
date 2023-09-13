@@ -35,6 +35,17 @@ Modified by Junhyeok Ahn (junhyeokahn91@gmail.com) for towr+
 #define TOWR_TOWR_ROS_INCLUDE_TOWR_ROS_HEIGHT_MAP_EXAMPLES_H_
 
 #include <towr_plus/terrain/height_map.h>
+#include <iostream>
+#include <cmath>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <iomanip>
+#include <vector>
+#include <iterator>
+#include <cstdlib>
+
 
 namespace towr_plus {
 
@@ -171,6 +182,121 @@ private:
   const double x_end1_ = x_start_ + length_;
   const double x_end2_ = x_start_ + 2 * length_;
 };
+
+/**
+ * @brief Terrain from height map file.
+ */
+class Travis : public HeightMap 
+{
+public:
+  double GetHeight(double x, double y) const override;
+  double GetHeightDerivWrtY(double x, double y) const override;
+  double GetHeightDerivWrtX(double x, double y) const override;
+
+  //////// CONSTRUCTOR //////////////////////////////////////////
+
+  // Takes in a string file path to the .txt file containing height data of a height map
+  Travis(std::string data_filename) 
+  {
+    std::fstream mapfile;
+    mapfile.open(data_filename, std::ios::in);
+
+    std::string line;
+    std::string number_as_string;
+
+    xmax, ymax, xmin, ymin, zmax, zmin = 0;
+
+    while (std::getline(mapfile, line, '\n'))
+    {
+        int i = 0;
+
+        float x,y,z;
+
+        for (std::istringstream ss(line); std::getline(ss, number_as_string, ',');)
+        {
+          // std::cout << line << '\n';
+          if (i == 0)
+          {
+            x = std::stof(number_as_string);
+            xpos.push_back(x);
+            if (x > xmax){xmax = x;}
+            if (x < xmin){xmin = x;}
+          }
+          else if (i == 1)
+          {
+            y = std::stof(number_as_string);
+            ypos.push_back(y);
+            if (y > ymax){ymax = y;}
+            if (y < ymin){ymin = y;}
+          }
+          else if (i == 2)
+          {
+            z = std::stof(number_as_string);
+            zpos.push_back(z);
+            if (z > zmax){zmax = z;}
+            if (z < zmin){zmin = z;}
+          }
+                
+          i++;
+        }
+              
+    }
+    // Uncomment the following block of code for debugging purposes /////
+
+    // std::cout << "X Position: " ;
+    // for (int i = 0; i < xpos.size(); i++ )
+    // {
+    //   std::cout << xpos[i] << ", ";
+    // }
+
+    // std::cout << "\nY position: ";
+
+    // for (int i = 0; i < ypos.size(); i++ )
+    // {
+    //   std::cout << ypos[i] << ", ";
+    // }
+
+    // std::cout << "\nZ position: ";
+    // for (int i = 0; i < zpos.size(); i++ )
+    // {
+    //   std::cout << zpos[i] << ", ";
+    // }
+    // std::cout << "\n";
+
+    mapfile.close();
+
+    data_vector_size = xpos.size();
+    resolution = xpos[1] - xpos[0];
+
+    x_length = std::round((xmax-xmin)/resolution) + 1;
+    y_length = std::round((ymax-ymin)/resolution) + 1;
+
+    // std::cout << "\nzmax: " << zmax << "\nzmin: " << zmin << std::endl;
+    // std::cout << "\nxmin: " << xmin << "\nymin: "<< ymin << "\nx length: " << x_length << "\ny length: " << y_length << std::endl;
+  }
+  //////////////////////////////////////////////////////////
+
+private:
+  ////////// Class Attributes ///////////////////////////////////
+
+  // Vectors containing X and Y positions along with height Data (Z)
+  std::vector<float> xpos;
+  std::vector<float> ypos;
+  std::vector<float> zpos;
+
+  float xmax, ymax, xmin, ymin, zmax, zmin;
+
+  // Variable that outputs size of vectors containing x,y, and z.
+  int data_vector_size;
+  int x_length;
+  int y_length;
+
+  // Variable that outputs point resolution
+  double resolution; 
+
+  //////////////////////////////////////////////////////////////
+};
+
 
 /** @}*/
 

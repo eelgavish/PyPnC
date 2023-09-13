@@ -13,10 +13,10 @@ locomotion_task:
         0: [0., 0., 0.]
         1: [0., 0., 0.]
 
-    final_base_lin: [0.9, 0.0, 0.98, 0., 0., 0.]
+    final_base_lin: [0.9, 0.5, 0.98, 0., 0., 0.]
     final_base_ang: [0., 0., 0., 0., 0., 0.]
 
-    terrain_type: "slope"
+    terrain_type: "Slope"
 
 locomotion_param:
 
@@ -44,18 +44,19 @@ locomotion_param:
     # LF: {1.5ds, ss, 2ds+ss, ss, 2ds+ss, ss, ds+b}
     # RF: {2.5ds+ss, ss, 2ds+ss, ss, 2ds+ss+b}
     ee_phase_durations:
-        0: [0.675, 0.75, 1.65, 0.75, 1.929252]
-        1: [1.875, 0.75, 1.65, 0.75, 0.729252]
+        0: [0.675, 0.75, 1.65, 0.75, 1.65, 0.75, 1.65, 0.75, 1.929252]
+        1: [1.875, 0.75, 1.65, 0.75, 1.65, 0.75, 1.65, 0.75, 0.729252]
     ee_in_contact_at_start:
         0: True
         1: True
 
     costs:
+        w_IntermediateBaseLinPosCost: [0, 0.1, 100.]
         w_FinalBaseLinPosCost: [2., 2., 2.]
         w_FinalBaseLinVelCost: [1., 1., 1.]
         w_FinalBaseAngPosCost: [2., 2., 2.]
         w_FinalBaseAngVelCost: [1., 1., 1.]
-        w_FinalEEMotionLinPosCost: [2., 2., 2.]
+        w_FinalEEMotionLinPosCost: [2., 2., 20.]
         w_FinalEEMotionAngPosCost: [2., 2., 2.]
         w_IntermediateBaseLinVelCost: [0.001, 0.001, 1.0]
         w_IntermediateBaseAngVelCost: [0.01, 0.01, 0.01]

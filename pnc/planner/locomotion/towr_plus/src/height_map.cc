@@ -61,6 +61,9 @@ HeightMap::Ptr HeightMap::MakeTerrain(TerrainID type) {
   case ChimneyLRID:
     return std::make_shared<ChimneyLR>();
     break;
+  case TravisID:
+    return std::make_shared<Travis>("");
+    break;
   default:
     assert(false);
     break;

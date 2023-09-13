@@ -6,6 +6,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 find_package(Eigen)
 include_directories(${EIGEN_INCLUDE_DIRS})
 find_package(ifopt 2.0.1 REQUIRED)
+find_package(JPEG REQUIRED)
 
 if(TARGET ifopt::ifopt_snopt)
     set(SNOPT_FOUND TRUE)
@@ -44,7 +45,7 @@ foreach(example atlas_half_step atlas_one_step atlas_two_step atlas_three_step
                 atlas_chimney atlas_lr_chimney atlas_chimney_jump atlas_lr_chimney_jump
                 valkyrie_forward_walk valkyrie_turning
                 valkyrie_round_walk valkyrie_steer_walk
-                valkyrie_slope
+                valkyrie_slope valkyrie_terrain
                 nao_forward_walk nao_side_walk)
 
     add_executable(${example} simulator/towr_plus/${example}.cpp)
@@ -53,6 +54,7 @@ foreach(example atlas_half_step atlas_one_step atlas_two_step atlas_three_step
         towr_plus
         ifopt::ifopt_ipopt
         my_yaml
+        JPEG::JPEG
     )
     if(SNOPT_FOUND)
         target_link_libraries(${example} PRIVATE ifopt::ifopt_snopt)

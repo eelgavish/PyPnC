@@ -485,6 +485,8 @@ NlpFormulation::CostPtrVec
 NlpFormulation::GetCost(const Parameters::CostName &name,
                         const Eigen::VectorXd weight) const {
   switch (name) {
+  // case Parameters::IntermediateBaseLinPosCost:
+  //   return MakeIntermediateBaseLinCost(Dx::kPos, weight);
   case Parameters::FinalBaseLinPosCost:
     return MakeFinalBaseLinCost(Dx::kPos, weight);
   case Parameters::FinalBaseLinVelCost:
